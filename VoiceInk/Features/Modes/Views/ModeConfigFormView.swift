@@ -15,6 +15,7 @@ struct ModeConfigFormView: View {
     @EnvironmentObject private var modeWarmupStore: ModeFormWarmupStore
     @FocusState private var isNameFieldFocused: Bool
 
+    @ObservedObject private var decisionModels = CustomDecisionModelManager.shared
     @State private var isShowingIconPicker = false
     @State private var isShowingDeleteConfirmation = false
     @State private var isShowingDefaultModeDeleteAlert = false
@@ -370,6 +371,45 @@ struct ModeConfigFormView: View {
             )
 
             if draft.isAIEnhancementEnabled {
+                Picker("Enhancement Strategy", selection: $draft.enhancementStrategy) {
+                    ForEach(EnhancementStrategy.allCases, id: \.self) { strategy in
+                        Text(strategy.displayName).tag(strategy)
+                    }
+                }
+                if draft.enhancementStrategy == .automatic {
+                    Picker("Decision Model", selection: Binding(
+                        get: { draft.decisionModelID ?? "" },
+                        set: { draft.decisionModelID = $0.isEmpty ? nil : $0 }
+                    )) {
+                        Text("Qwen(cn) · decision-model-preview").tag("")
+                        ForEach(decisionModels.models) { model in
+                            Text(model.name).tag(model.id.uuidString)
+                        }
+                        if let id = draft.decisionModelID, !decisionModels.models.contains(where: { $0.id.uuidString == id }) {
+                            Text("Unavailable decision model").tag(id)
+                        }
+                    }
+                    LabeledContent("Polish Trigger Threshold") {
+                        HStack(spacing: 12) {
+                            Slider(value: $draft.decisionThreshold, in: 0...1, step: 0.05)
+                                .frame(width: 140)
+                                .accessibilityLabel(Text("Polish Trigger Threshold"))
+                            Text(draft.decisionThreshold, format: .percent.precision(.fractionLength(0)))
+                                .monospacedDigit()
+                                .frame(width: 40)
+                            Button {
+                                draft.decisionThreshold = DecisionSettings.defaultThreshold
+                            } label: {
+                                Image(systemName: "arrow.counterclockwise")
+                            }
+                            .buttonStyle(.plain)
+                            .help("Reset to default")
+                        }
+                    }
+                    Text("Applies only to this mode after saving. If Decision finishes first, higher thresholds favor the original text. If polishing finishes first, its result is inserted immediately.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 let providerOptions = aiProviderOptions
 
                 if providerOptions.isEmpty {
@@ -381,7 +421,7 @@ struct ModeConfigFormView: View {
                 } else {
                     Picker("AI Provider", selection: providerBinding) {
                         ForEach(providerOptions, id: \.self) { provider in
-                            Text(provider.rawValue).tag(provider)
+                            Text(provider == .qwen ? "Qwen(cn)" : provider.rawValue).tag(provider)
                         }
                     }
                     .onChange(of: draft.selectedAIProvider) { _, newValue in

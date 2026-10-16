@@ -132,7 +132,7 @@ private struct ModelProviderIdentity {
             providerKey = "Custom"
             fallbackSystemImage = "slider.horizontal.3"
         default:
-            displayName = cloudProvider?.providerKey ?? provider.rawValue
+            displayName = provider == .qwen ? "Qwen(cn)" : (cloudProvider?.providerKey ?? provider.rawValue)
             providerKey = cloudProvider?.providerKey ?? provider.rawValue
             fallbackSystemImage = "cloud.fill"
         }
@@ -177,9 +177,9 @@ private struct ModelProviderIdentity {
         }
 
         return ModelProviderIdentity(
-            providerName: provider.rawValue,
+            providerName: provider == .qwen ? "Qwen(cn)" : provider.rawValue,
             descriptor: descriptor(
-                displayName: provider.rawValue,
+                displayName: provider == .qwen ? "Qwen(cn)" : provider.rawValue,
                 providerKey: provider.rawValue,
                 aiProvider: provider,
                 cloudProvider: cloudProvider

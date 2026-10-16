@@ -21,6 +21,8 @@ final class APIKeyManager {
         "assemblyai": "assemblyAIAPIKey",
         "xai": "xaiAPIKey",
         "cartesia": "cartesiaAPIKey",
+        "doubao": "doubaoAPIKey",
+        "bailian": "bailianAPIKey",
         "openai": "openAIAPIKey",
         "anthropic": "anthropicAPIKey",
         "openrouter": "openRouterAPIKey",

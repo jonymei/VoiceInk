@@ -8,6 +8,13 @@ enum TranscriptionModelRegistry {
     }
 
     static func model(forSelectionKey key: String, in models: [any TranscriptionModel]) -> (any TranscriptionModel)? {
+        let aliases = ["qwen-asr-message": "qwen-asr-message-smooth",
+                       "doubao-asr-streaming-v2-smooth": "doubao-asr-streaming-v2",
+                       "doubao-asr-streaming-v1": "doubao-asr-streaming-v2",
+                       "doubao-asr-flash": "doubao-asr-sentence"]
+        if let replacement = aliases[key], let model = models.first(where: { $0.name == replacement }) {
+            return model
+        }
         if let model = models.first(where: { $0.selectionKey == key }) {
             return model
         }

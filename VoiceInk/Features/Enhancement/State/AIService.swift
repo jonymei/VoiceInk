@@ -3,6 +3,7 @@ import Foundation
 import LLMkit
 
 enum AIProvider: String, CaseIterable {
+    case qwen = "Bailian"
     case cerebras = "Cerebras"
     case groq = "Groq"
     case gemini = "Gemini"
@@ -22,6 +23,8 @@ enum AIProvider: String, CaseIterable {
 
     var baseURL: String {
         switch self {
+        case .qwen:
+            return (try? BailianConfiguration.saved.endpoint(path: "/compatible-mode/v1/chat/completions").absoluteString) ?? ""
         case .cerebras:
             return "https://api.cerebras.ai/v1/chat/completions"
         case .groq:
@@ -59,6 +62,7 @@ enum AIProvider: String, CaseIterable {
 
     var defaultModel: String {
         switch self {
+        case .qwen: return "qwen3.8-flash"
         case .cerebras:
             return "qwen-3.8-27b"
         case .groq:
@@ -96,6 +100,7 @@ enum AIProvider: String, CaseIterable {
 
     var availableModels: [String] {
         switch self {
+        case .qwen: return ["qwen3.8-flash"]
         case .cerebras:
             return [
                 "qwen-3.8-27b",

@@ -36,6 +36,11 @@ build/
 .review-build/
 .local-dependencies/
 
+# Local credentials for optional live API checks
+.env
+.env.*
+!.env.example
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However

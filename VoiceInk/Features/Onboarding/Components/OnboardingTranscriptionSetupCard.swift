@@ -22,6 +22,8 @@ struct OnboardingTranscriptionSetupCard: View {
     @State private var verificationSucceeded = false
     @State private var isSwitchingProvider = false
     @State private var isLoadingOpenRouterModels = false
+    @AppStorage("BailianWorkspaceID") private var bailianWorkspaceID = ""
+    @AppStorage("BailianRegion") private var bailianRegion = BailianRegion.beijing.rawValue
 
     private var selectedProvider: (any CloudProvider)? {
         providerOptions.first {
@@ -171,6 +173,16 @@ struct OnboardingTranscriptionSetupCard: View {
                     .foregroundColor(AppTheme.Text.secondary)
                 }
             } else {
+                if selectedProvider?.modelProvider == .qwen {
+                    TextField("Bailian Workspace ID", text: $bailianWorkspaceID)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(isVerifying)
+                    Picker("Bailian Region", selection: $bailianRegion) {
+                        Text("Beijing").tag(BailianRegion.beijing.rawValue)
+                        Text("Singapore").tag(BailianRegion.singapore.rawValue)
+                    }
+                    .disabled(isVerifying)
+                }
                 apiKeyField
                 verificationFooter
             }
@@ -448,7 +460,7 @@ struct OnboardingTranscriptionSetupCard: View {
 
     private func descriptor(for provider: any CloudProvider) -> ProviderDescriptor {
         ProviderDescriptor(
-            displayName: provider.providerKey,
+            displayName: provider.modelProvider == .qwen ? "Qwen(cn)" : provider.providerKey,
             providerKey: provider.providerKey,
             aiProvider: nil,
             cloudProvider: provider
@@ -505,7 +517,7 @@ private struct TranscriptionProviderChoiceButton: View {
                 )
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(provider.providerKey)
+                    Text(provider.modelProvider == .qwen ? "Qwen(cn)" : provider.providerKey)
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(AppTheme.Text.primary)
                         .lineLimit(1)
@@ -529,12 +541,12 @@ private struct TranscriptionProviderChoiceButton: View {
             .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
-        .help(provider.providerKey)
+        .help(provider.modelProvider == .qwen ? "Qwen(cn)" : provider.providerKey)
     }
 
     private var descriptor: ProviderDescriptor {
         ProviderDescriptor(
-            displayName: provider.providerKey,
+            displayName: provider.modelProvider == .qwen ? "Qwen(cn)" : provider.providerKey,
             providerKey: provider.providerKey,
             aiProvider: nil,
             cloudProvider: provider

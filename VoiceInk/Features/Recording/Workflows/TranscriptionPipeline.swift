@@ -111,6 +111,9 @@ class TranscriptionPipeline {
                     context: transcriptionConfiguration.requestContext
                 )
             }
+            DevelopmentDecisionLog.shared.record("asr_result", fields: [
+                "model": model.name, "raw_text": text,
+            ])
             text = TranscriptionOutputFilter.filter(text)
             let transcriptionDuration = Date().timeIntervalSince(transcriptionStart)
 
@@ -197,12 +200,17 @@ class TranscriptionPipeline {
                             configuration: resolvedEnhancementConfiguration,
                             contextSnapshot: contextSnapshot
                         )
-                        transcription.enhancedText = enhancementResult.text
+                        transcription.enhancedText = enhancementResult.wasEnhanced ? enhancementResult.text : nil
                         transcription.promptName =
                             enhancementResult.promptName ?? resolvedEnhancementConfiguration.prompt?.title
                         transcription.enhancementDuration = enhancementResult.duration
                         transcription.aiRequestSystemMessage = enhancementResult.systemMessage
                         transcription.aiRequestUserMessage = enhancementResult.userMessage
+                        if !enhancementResult.wasEnhanced {
+                            transcription.promptName = nil
+                            transcription.aiEnhancementModelName = nil
+                            transcription.enhancementDuration = nil
+                        }
                         finalText = enhancementResult.text
                     } catch {
                         let errorDescription = EnhancementFailureFormatter.description(for: error)

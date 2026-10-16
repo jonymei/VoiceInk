@@ -43,6 +43,7 @@ struct ModelManagementView: View {
         case cloudProvider(ProviderDescriptor)
         case customTranscriptionModel(CustomCloudModel?)
         case customEnhancementModel(CustomAIProviderConfig?)
+        case customDecisionModel(CustomDecisionModel?)
     }
 
     private var isSettingsPanelOpen: Bool {
@@ -152,6 +153,8 @@ struct ModelManagementView: View {
                 onClose: closePanel,
                 onSave: closePanel
             )
+        case .customDecisionModel(let model):
+            CustomDecisionModelEditor(model: model, manager: .shared, onClose: closePanel)
         case nil:
             EmptyView()
         }
@@ -200,7 +203,8 @@ struct ModelManagementView: View {
                     },
                     onDeleteEnhancementModel: { provider in
                         confirmDeleteCustomEnhancementModel(provider)
-                    }
+                    },
+                    onEditDecisionModel: { activePanel = .customDecisionModel($0) }
                 )
             }
         }

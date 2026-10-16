@@ -35,6 +35,8 @@ struct EnhancementRuntimeConfiguration {
     let useClipboardContext: Bool
     let useSelectedTextContext: Bool
     let useScreenCaptureContext: Bool
+    var strategy: EnhancementStrategy = .always
+    var decisionThreshold: Double = DecisionSettings.defaultThreshold
 
     func replacingPrompt(_ prompt: CustomPrompt) -> EnhancementRuntimeConfiguration {
         EnhancementRuntimeConfiguration(
@@ -45,7 +47,8 @@ struct EnhancementRuntimeConfiguration {
             modelName: modelName,
             useClipboardContext: useClipboardContext,
             useSelectedTextContext: useSelectedTextContext,
-            useScreenCaptureContext: useScreenCaptureContext
+            useScreenCaptureContext: useScreenCaptureContext,
+            decisionThreshold: decisionThreshold
         )
     }
 }
@@ -175,7 +178,9 @@ enum ModeRuntimeResolver {
             modelName: modelName,
             useClipboardContext: provider == .voiceInkRefine ? false : mode?.useClipboardContext ?? false,
             useSelectedTextContext: provider == .voiceInkRefine ? false : mode?.useSelectedTextContext ?? true,
-            useScreenCaptureContext: provider == .voiceInkRefine ? false : mode?.useScreenCapture ?? false
+            useScreenCaptureContext: provider == .voiceInkRefine ? false : mode?.useScreenCapture ?? false,
+            strategy: mode?.enhancementStrategy ?? .always,
+            decisionThreshold: DecisionSettings.validatedThreshold(mode?.decisionThreshold ?? DecisionSettings.defaultThreshold)
         )
     }
 

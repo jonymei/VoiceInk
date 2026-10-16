@@ -11,10 +11,13 @@ struct CustomProviderManagementView: View {
     let onEditEnhancementModel: (CustomAIProviderConfig) -> Void
     let onDeleteEnhancementModel: (CustomAIProviderConfig) -> Void
 
+    let onEditDecisionModel: (CustomDecisionModel?) -> Void
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             customTranscriptionSection
             customEnhancementSection
+            CustomDecisionModelsSection(onEdit: onEditDecisionModel)
         }
     }
 

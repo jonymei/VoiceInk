@@ -48,6 +48,9 @@ struct ModeConfig: Codable, Identifiable, Equatable {
     var triggerGroups: [ModeTriggerGroup]?
     var triggerWords: [String] = []
     var isAIEnhancementEnabled: Bool
+    var decisionModelID: String?
+    var enhancementStrategy: EnhancementStrategy = .always
+    var decisionThreshold: Double = DecisionSettings.defaultThreshold
     var selectedPrompt: String?
     var selectedTranscriptionModelName: String?
     var isRealtimeTranscriptionEnabled: Bool = true
@@ -64,7 +67,7 @@ struct ModeConfig: Codable, Identifiable, Equatable {
     var isDefault: Bool = false
 
     enum CodingKeys: String, CodingKey {
-        case id, name, icon, appConfigs, urlConfigs, triggerGroups, triggerWords, isAIEnhancementEnabled,
+        case id, name, icon, appConfigs, urlConfigs, triggerGroups, triggerWords, isAIEnhancementEnabled, enhancementStrategy, decisionModelID, decisionThreshold,
             selectedPrompt, isRealtimeTranscriptionEnabled, selectedLanguage, isTextFormattingEnabled,
             useClipboardContext, useSelectedTextContext, useScreenCapture, selectedAIProvider, selectedAIModel,
             outputMode, customCommand, isEnabled, isDefault
@@ -82,7 +85,8 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         useScreenCapture: Bool = false,
         isTextFormattingEnabled: Bool = false, selectedAIProvider: String? = nil, selectedAIModel: String? = nil,
         outputMode: ModeOutputMode = .paste, customCommand: ModeCustomCommand? = nil,
-        isEnabled: Bool = true, isDefault: Bool = false
+        isEnabled: Bool = true, isDefault: Bool = false, enhancementStrategy: EnhancementStrategy = .always,
+        decisionModelID: String? = nil, decisionThreshold: Double = DecisionSettings.defaultThreshold
     ) {
         self.id = id
         self.name = name
@@ -92,6 +96,9 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         self.triggerGroups = triggerGroups
         self.triggerWords = Self.normalizedTriggerWords(triggerWords)
         self.isAIEnhancementEnabled = isAIEnhancementEnabled
+        self.enhancementStrategy = enhancementStrategy
+        self.decisionModelID = decisionModelID
+        self.decisionThreshold = DecisionSettings.validatedThreshold(decisionThreshold)
         self.selectedPrompt = selectedPrompt
         self.useClipboardContext = useClipboardContext
         self.useSelectedTextContext = useSelectedTextContext
@@ -138,6 +145,11 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         triggerWords = Self.normalizedTriggerWords(
             try container.decodeIfPresent([String].self, forKey: .triggerWords) ?? [])
         isAIEnhancementEnabled = try container.decode(Bool.self, forKey: .isAIEnhancementEnabled)
+        decisionModelID = try container.decodeIfPresent(String.self, forKey: .decisionModelID)
+        enhancementStrategy = try container.decodeIfPresent(EnhancementStrategy.self, forKey: .enhancementStrategy) ?? .always
+        decisionThreshold = container.contains(.decisionThreshold)
+            ? DecisionSettings.validatedThreshold((try? container.decode(Double.self, forKey: .decisionThreshold)) ?? DecisionSettings.defaultThreshold)
+            : DecisionSettings.legacyThreshold
         selectedPrompt = try container.decodeIfPresent(String.self, forKey: .selectedPrompt)
         isRealtimeTranscriptionEnabled =
             try container.decodeIfPresent(Bool.self, forKey: .isRealtimeTranscriptionEnabled) ?? true
@@ -182,6 +194,9 @@ struct ModeConfig: Codable, Identifiable, Equatable {
         try container.encodeIfPresent(triggerGroups, forKey: .triggerGroups)
         if !triggerWords.isEmpty { try container.encode(triggerWords, forKey: .triggerWords) }
         try container.encode(isAIEnhancementEnabled, forKey: .isAIEnhancementEnabled)
+        try container.encodeIfPresent(decisionModelID, forKey: .decisionModelID)
+        try container.encode(enhancementStrategy, forKey: .enhancementStrategy)
+        try container.encode(DecisionSettings.validatedThreshold(decisionThreshold), forKey: .decisionThreshold)
         try container.encodeIfPresent(selectedPrompt, forKey: .selectedPrompt)
         try container.encode(isRealtimeTranscriptionEnabled, forKey: .isRealtimeTranscriptionEnabled)
         try container.encodeIfPresent(selectedLanguage, forKey: .selectedLanguage)
@@ -265,6 +280,10 @@ class ModeManager: ObservableObject {
         {
             configurations = configs
             migrateLoadedModeConfigurationsIfNeeded()
+            let storedModes = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]]
+            if storedModes?.contains(where: { $0["decisionThreshold"] == nil }) == true {
+                saveConfigurations()
+            }
         }
     }
 

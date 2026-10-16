@@ -88,6 +88,7 @@ struct ReasoningConfig {
 
     // Provider-specific body params for hiding reasoning.
     static func getExtraBodyParameters(for provider: AIProvider, modelName: String) -> [String: Any]? {
+        if provider == .qwen { return ["enable_thinking": false] }
         if provider == .cerebras && modelName == "gpt-oss-120b" {
             return ["reasoning_format": "hidden"]
         } else if provider == .groq && (modelName == "openai/gpt-oss-120b" || modelName == "openai/gpt-oss-20b") {

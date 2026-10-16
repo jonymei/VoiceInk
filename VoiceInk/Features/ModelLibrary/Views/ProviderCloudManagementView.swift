@@ -14,11 +14,12 @@ struct CloudProviderManagementView: View {
             .groq,
             .mistral,
             .cerebras,
+            .qwen,
         ]
 
         var descriptors = enhancementProviders.map { aiProvider in
             ProviderDescriptor(
-                displayName: aiProvider.rawValue,
+                displayName: aiProvider == .qwen ? "Qwen(cn)" : aiProvider.rawValue,
                 providerKey: aiProvider.rawValue,
                 aiProvider: aiProvider,
                 cloudProvider: matchingCloudProvider(for: aiProvider)
@@ -43,12 +44,12 @@ struct CloudProviderManagementView: View {
 
         let preferredOrder = [
             "Groq", "Cerebras", "Gemini", "OpenAI", "OpenRouter", "Anthropic", "Mistral",
-            "Deepgram", "ElevenLabs", "Soniox", "Speechmatics", "AssemblyAI", "xAI", "Cartesia",
+            "Doubao", "Bailian", "Deepgram", "ElevenLabs", "Soniox", "Speechmatics", "AssemblyAI", "xAI", "Cartesia",
         ]
 
         return descriptors.sorted { first, second in
-            let firstIndex = preferredOrder.firstIndex(of: first.displayName) ?? Int.max
-            let secondIndex = preferredOrder.firstIndex(of: second.displayName) ?? Int.max
+            let firstIndex = preferredOrder.firstIndex(of: first.providerKey) ?? Int.max
+            let secondIndex = preferredOrder.firstIndex(of: second.providerKey) ?? Int.max
             if firstIndex != secondIndex { return firstIndex < secondIndex }
             return first.displayName < second.displayName
         }
@@ -106,6 +107,10 @@ struct ProviderDescriptor: Identifiable {
         aiProvider != nil
     }
 
+    var hasDecision: Bool {
+        providerKey.caseInsensitiveCompare("Bailian") == .orderedSame
+    }
+
     var brandAssetName: String? {
         switch providerKey.lowercased() {
         case "openai":
@@ -136,6 +141,10 @@ struct ProviderDescriptor: Identifiable {
             return "provider-xai"
         case "cartesia":
             return "provider-cartesia"
+        case "bailian":
+            return "provider-qwen"
+        case "doubao":
+            return "provider-doubao"
         default:
             return nil
         }
@@ -171,6 +180,10 @@ struct ProviderDescriptor: Identifiable {
             return URL(string: "https://console.x.ai/")
         case "cartesia":
             return URL(string: "https://play.cartesia.ai/keys")
+        case "doubao":
+            return URL(string: "https://console.volcengine.com/speech/new/setting/apikeys?projectName=default")
+        case "bailian":
+            return URL(string: "https://bailian.console.aliyun.com/model/settings/api-key")
         default:
             return nil
         }
@@ -218,6 +231,10 @@ private struct ProviderListRow: View {
         if let provider = descriptor.aiProvider {
             let enhancementCount = aiService.availableModels(for: provider).count
             parts.append(enhancementModelCountText(enhancementCount))
+        }
+
+        if descriptor.hasDecision {
+            parts.append(String.localizedStringWithFormat(NSLocalizedString("%lld Decision models", comment: "Decision model count"), Int64(1)))
         }
 
         return parts.joined(separator: " · ")

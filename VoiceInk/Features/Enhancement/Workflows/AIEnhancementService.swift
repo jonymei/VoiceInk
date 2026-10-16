@@ -10,6 +10,7 @@ struct AIEnhancementResult: Sendable {
     let promptName: String?
     let systemMessage: String?
     let userMessage: String?
+    var wasEnhanced: Bool = true
 }
 
 @MainActor
@@ -188,6 +189,7 @@ class AIEnhancementService: ObservableObject {
         configuration: EnhancementRuntimeConfiguration,
         contextSnapshot: RecordingContextSnapshot?
     ) async throws -> (text: String, systemMessage: String?, userMessage: String?) {
+        try Task.checkCancellation()
         guard isConfigured(for: configuration) else {
             throw EnhancementError.notConfigured
         }
@@ -237,6 +239,7 @@ class AIEnhancementService: ObservableObject {
             try await waitForRateLimit()
         }
 
+        try Task.checkCancellation()
         do {
             let completion = try await aiService.performChatCompletion(
                 provider: provider,
@@ -325,6 +328,7 @@ class AIEnhancementService: ObservableObject {
         var currentDelay = initialDelay
 
         while retries < maxAttempts {
+            try Task.checkCancellation()
             do {
                 return try await makeRequest(
                     text: text,
@@ -332,6 +336,7 @@ class AIEnhancementService: ObservableObject {
                     contextSnapshot: contextSnapshot
                 )
             } catch let error as EnhancementError {
+                try Task.checkCancellation()
                 switch error {
                 case .networkError, .serverError, .rateLimitExceeded:
                     retries += 1
@@ -364,6 +369,7 @@ class AIEnhancementService: ObservableObject {
                     throw error
                 }
             } catch {
+                try Task.checkCancellation()
                 let nsError = error as NSError
                 if nsError.domain == NSURLErrorDomain
                     && [NSURLErrorNotConnectedToInternet, NSURLErrorTimedOut, NSURLErrorNetworkConnectionLost].contains(
@@ -392,18 +398,46 @@ class AIEnhancementService: ObservableObject {
     func enhance(
         _ text: String,
         configuration: EnhancementRuntimeConfiguration,
-        contextSnapshot: RecordingContextSnapshot? = nil
+        contextSnapshot: RecordingContextSnapshot? = nil,
+        forceEnhancement: Bool = false
     ) async throws -> AIEnhancementResult {
         let startTime = Date()
         let promptName = configuration.prompt?.title
 
         do {
-            let requestResult = try await makeRequestWithRetry(
-                text: text,
-                configuration: configuration,
-                contextSnapshot: contextSnapshot,
-                maxAttempts: EnhancementRequestSettings.maximumAttempts
+            let strategy: EnhancementStrategy = forceEnhancement || configuration.mode?.outputMode == .respond
+                ? .always : configuration.strategy
+            let requestResult = try await strategy.process(
+                for: text,
+                decide: {
+                    try await CustomDecisionModelManager.shared.needsPolish(
+                        text: text, instructions: configuration.prompt?.finalPromptText ?? "Clean up this dictation without changing its meaning.",
+                        modelID: configuration.mode?.decisionModelID,
+                        threshold: configuration.decisionThreshold
+                    )
+                },
+                enhance: {
+                    try await self.makeRequestWithRetry(
+                        text: text,
+                        configuration: configuration,
+                        contextSnapshot: contextSnapshot,
+                        maxAttempts: EnhancementRequestSettings.maximumAttempts
+                    )
+                },
+                onDecision: { decision in
+                    DevelopmentDecisionLog.shared.record("enhancement_route", fields: [
+                        "decision_input": text, "strategy": strategy.rawValue,
+                        "decision_model_id": configuration.mode?.decisionModelID ?? "decision-model-preview",
+                        "threshold": configuration.decisionThreshold,
+                        "execution": strategy == .automatic ? "parallel" : "direct",
+                        "outcome": decision == .polishFirst ? "polish_first" : decision == .enhance ? "enhance" : decision == .unchanged ? "unchanged" : "fallback_to_polish",
+                    ])
+                }
             )
+            guard let requestResult else {
+                return AIEnhancementResult(text: text, duration: Date().timeIntervalSince(startTime),
+                                           promptName: nil, systemMessage: nil, userMessage: nil, wasEnhanced: false)
+            }
             let endTime = Date()
             let duration = endTime.timeIntervalSince(startTime)
             return AIEnhancementResult(

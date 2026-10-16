@@ -1,6 +1,389 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Polish Trigger Threshold": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "润色触发阈值" } } }
+    },
+    "Applies only to this mode after saving. If Decision finishes first, higher thresholds favor the original text. If polishing finishes first, its result is inserted immediately.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "保存后仅对当前模式生效。Decision 先返回时，阈值越高越倾向保留原文；润色先完成时，立即采用润色结果。" } } }
+    },
+    "Unable to save. Check the HTTPS endpoint, model ID and API key.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "无法保存，请检查 HTTPS 地址、模型 ID 和 API 密钥。" } } }
+    },
+    "Native semantic smoothing is enabled. Disable AI Enhancement to insert the ASR result directly.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "已启用内置语义顺滑，关闭 AI 增强即可直接使用识别结果。" } } }
+    },
+    "Use a Doubao Speech API key with volc.seedasr.sauc.duration access, not an Ark API key.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "请使用已开通 volc.seedasr.sauc.duration 的豆包语音密钥，而非火山方舟密钥。" } } }
+    },
+    "Use an API key matching this workspace and region.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "请使用与业务空间及地域匹配的 API 密钥。" } } }
+    },
+    "Real-time speech recognition with native text cleanup.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "实时语音识别，内置文本修正。" } } }
+    },
+    "Low-latency incremental recognition while speaking.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "边说边返回增量识别结果，低延迟。" } } }
+    },
+    "Returns complete recognition after speech ends, prioritizing accuracy.": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "说完后返回完整识别结果，优先保证准确率。" } } }
+    },
+    "Doubao Realtime Recognition": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "豆包实时语音识别" } } }
+    },
+    "Doubao Sentence Recognition": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "豆包一句话识别" } } }
+    },
+    "Unavailable decision model": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "决策模型不可用" } } }
+    },
+    "API Format": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "API 格式" } } }
+    },
+    "Delete Custom Decision Model?": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "删除自定义决策模型？" } } }
+    },
+    "Add decision model": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "添加决策模型" } } }
+    },
+    "Custom Decision Model": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "自定义决策模型" } } }
+    },
+    "No Custom Decision Models": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "暂无自定义决策模型" } } }
+    },
+    "Custom Decision Models": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "自定义决策模型" } } }
+    },
+    "%lld Decision models": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "%lld 个决策模型" } } }
+    },
+    "Decision Model": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "决策模型" } } }
+    },
+    "Available Decision Models": {
+      "localizations": { "zh-Hans": { "stringUnit": { "state": "translated", "value": "可用的决策模型" } } }
+    },
+    "Always": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "始终"
+          }
+        }
+      }
+    },
+    "Automatic": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动"
+          }
+        }
+      }
+    },
+    "Enhancement Strategy": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "润色策略"
+          }
+        }
+      }
+    },
+    "Bailian": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "阿里云百炼"
+          }
+        }
+      }
+    },
+    "Bailian Workspace ID": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百炼业务空间 ID"
+          }
+        }
+      }
+    },
+    "Bailian Region": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百炼地域"
+          }
+        }
+      }
+    },
+    "Beijing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "北京"
+          }
+        }
+      }
+    },
+    "Singapore": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新加坡"
+          }
+        }
+      }
+    },
+    "Configure the Bailian workspace ID and matching region first.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先配置百炼业务空间 ID 及对应地域。"
+          }
+        }
+      }
+    },
+    "Configure a Bailian API key first.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先配置百炼 API Key。"
+          }
+        }
+      }
+    },
+    "Bailian returned an invalid or incomplete recognition response.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百炼返回了无效或不完整的识别响应。"
+          }
+        }
+      }
+    },
+    "Qwen ASR is not connected.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qwen 语音识别未连接。"
+          }
+        }
+      }
+    },
+    "Qwen ASR timed out waiting for confirmation.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qwen 语音识别等待确认超时。"
+          }
+        }
+      }
+    },
+    "Could not connect to Qwen ASR. Check your network and service access.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法连接 Qwen 语音识别，请检查网络及服务访问权限。"
+          }
+        }
+      }
+    },
+    "Qwen ASR requires 16-bit mono PCM audio at 16 kHz.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qwen 识别需要 16 kHz、16-bit、单声道 PCM 音频。"
+          }
+        }
+      }
+    },
+    "Bailian request failed (HTTP %lld). Check the API key, workspace, region and quota.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百炼请求失败（HTTP %lld），请检查密钥、业务空间、地域及额度。"
+          }
+        }
+      }
+    },
+    "Bailian recognition failed. Check model access, workspace and quota.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百炼识别失败，请检查模型访问权限、业务空间及额度。"
+          }
+        }
+      }
+    },
+    "Enter a Doubao Speech API key from the new Volcengine console.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请填写火山引擎新版控制台的豆包语音服务 API Key。"
+          }
+        }
+      }
+    },
+    "The audio recording is empty.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "录音内容为空。"
+          }
+        }
+      }
+    },
+    "Doubao Speech Flash accepts audio files up to 100 MB.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音极速版支持最大 100 MB 的音频文件。"
+          }
+        }
+      }
+    },
+    "Doubao Speech returned an invalid response.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音服务返回了无效响应。"
+          }
+        }
+      }
+    },
+    "Doubao Speech did not detect any speech in the recording.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音服务未检测到录音中的人声。"
+          }
+        }
+      }
+    },
+    "Doubao Speech request failed (HTTP %lld). Check your API key and service access.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音请求失败（HTTP %lld），请检查 API Key 和服务权限。"
+          }
+        }
+      }
+    },
+    "Doubao Speech request failed (code %@). Check your service permissions, quota, and audio format.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音请求失败（错误码 %@），请检查服务权限、额度和音频格式。"
+          }
+        }
+      }
+    },
+    "Doubao Speech returned an invalid streaming packet.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包语音服务返回了无效的流式数据包。"
+          }
+        }
+      }
+    },
+    "Doubao streaming recognition failed (code %lld). Check your speech service permissions and quota.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别失败（错误码 %lld），请检查语音服务权限和额度。"
+          }
+        }
+      }
+    },
+    "Doubao streaming recognition is not connected.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别尚未连接。"
+          }
+        }
+      }
+    },
+    "Doubao streaming recognition requires 16-bit mono PCM audio at 16 kHz.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别需要 16 kHz、16-bit 的单声道 PCM 音频。"
+          }
+        }
+      }
+    },
+    "Could not connect to Doubao streaming recognition. Check your API key, service access, and network.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法连接豆包实时识别，请检查 API Key、服务权限和网络。"
+          }
+        }
+      }
+    },
+    "Doubao streaming recognition timed out waiting for the final result.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别等待最终结果超时。"
+          }
+        }
+      }
+    },
+    "Doubao streaming connection failed (HTTP %lld). Check the speech API key and realtime service permissions.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别连接失败（HTTP %lld），请检查语音服务 API Key 和实时识别权限。"
+          }
+        }
+      }
+    },
+    "Doubao streaming network connection failed (URL error %lld).": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包实时识别网络连接失败（URL 错误 %lld）。"
+          }
+        }
+      }
+    },
     "" : {
       "localizations" : {
         "de" : {

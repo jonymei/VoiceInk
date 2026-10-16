@@ -43,6 +43,8 @@ enum CloudProviderRegistry {
         AssemblyAIProvider(),
         XAIProvider(),
         CartesiaProvider(),
+        DoubaoProvider(),
+        QwenProvider(),
         OpenRouterProvider(),
     ]
 

@@ -16,6 +16,8 @@ struct ProviderDetailPanel: View {
     @State private var verificationSucceeded = false
     @State private var isShowingRemoveAPIKeyConfirmation = false
     @State private var activeDescriptorID = ""
+    @AppStorage("BailianWorkspaceID") private var bailianWorkspaceID = ""
+    @AppStorage("BailianRegion") private var bailianRegion = BailianRegion.beijing.rawValue
 
     private var isConfigured: Bool {
         APIKeyManager.shared.hasAPIKey(forProvider: descriptor.providerKey)
@@ -39,6 +41,10 @@ struct ProviderDetailPanel: View {
 
                     if descriptor.hasEnhancement {
                         enhancementModelsSection
+                    }
+
+                    if descriptor.hasDecision {
+                        decisionModelsSection
                     }
                 }
                 .padding(.horizontal, 20)
@@ -165,6 +171,34 @@ struct ProviderDetailPanel: View {
 
     private var apiKeyInputRow: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if descriptor.cloudProvider?.modelProvider == .qwen {
+                TextField("Bailian Workspace ID", text: $bailianWorkspaceID)
+                    .textFieldStyle(.roundedBorder)
+                    .disabled(isVerifying)
+                Picker("Bailian Region", selection: $bailianRegion) {
+                    Text("Beijing").tag(BailianRegion.beijing.rawValue)
+                    Text("Singapore").tag(BailianRegion.singapore.rawValue)
+                }
+                .disabled(isVerifying)
+                Text("Use an API key matching this workspace and region.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if descriptor.cloudProvider?.modelProvider == .doubao {
+                Text(
+                    "Use a Doubao Speech API key with volc.seedasr.sauc.duration access, not an Ark API key."
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                Text("Native semantic smoothing is enabled. Disable AI Enhancement to insert the ASR result directly.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             HStack(spacing: 12) {
                 providerDetailIcon("key.fill")
 
@@ -285,6 +319,14 @@ struct ProviderDetailPanel: View {
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 8)
             }
+        }
+    }
+
+    private var decisionModelsSection: some View {
+        ProviderModelListSection(title: "Available Decision Models") {
+            modelRow(title: BailianDecisionClient.modelID, subtitle: nil,
+                     trailing: nil, systemImage: "arrow.triangle.branch")
+
         }
     }
 

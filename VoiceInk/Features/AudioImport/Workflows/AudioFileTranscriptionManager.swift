@@ -177,6 +177,7 @@ class AudioTranscriptionManager: ObservableObject {
                 context: transcriptionConfiguration.requestContext
             )
             let transcriptionDuration = Date().timeIntervalSince(transcriptionStart)
+            DevelopmentDecisionLog.shared.record("asr_result", fields: ["model": currentModel.name, "raw_text": text])
             text = TranscriptionOutputFilter.filter(text)
             text = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -219,15 +220,15 @@ class AudioTranscriptionManager: ObservableObject {
                     transcription = Transcription(
                         text: cleanedText,
                         duration: duration,
-                        enhancedText: enhancementResult.text,
+                        enhancedText: enhancementResult.wasEnhanced ? enhancementResult.text : nil,
                         audioFileURL: permanentURL.absoluteString,
                         transcriptionModelName: currentModel.displayName,
-                        aiEnhancementModelName: enhancementConfiguration.modelName
-                            ?? enhancementConfiguration.provider?.defaultModel,
-                        promptName: enhancementResult.promptName
-                            ?? enhancementConfiguration.prompt?.title,
+                        aiEnhancementModelName: enhancementResult.wasEnhanced
+                            ? (enhancementConfiguration.modelName ?? enhancementConfiguration.provider?.defaultModel) : nil,
+                        promptName: enhancementResult.wasEnhanced
+                            ? (enhancementResult.promptName ?? enhancementConfiguration.prompt?.title) : nil,
                         transcriptionDuration: transcriptionDuration,
-                        enhancementDuration: enhancementResult.duration,
+                        enhancementDuration: enhancementResult.wasEnhanced ? enhancementResult.duration : nil,
                         aiRequestSystemMessage: enhancementResult.systemMessage,
                         aiRequestUserMessage: enhancementResult.userMessage,
                         modeName: modeMetadata.name,

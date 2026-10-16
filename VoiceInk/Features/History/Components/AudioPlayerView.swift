@@ -618,7 +618,8 @@ struct AudioPlayerView: View {
                 transcription.promptName = enhancementConfiguration.prompt?.title
                 let enhancementResult = try await enhancementService.enhance(
                     transcription.text,
-                    configuration: enhancementConfiguration
+                    configuration: enhancementConfiguration,
+                    forceEnhancement: true
                 )
                 await MainActor.run {
                     transcription.enhancedText = enhancementResult.text

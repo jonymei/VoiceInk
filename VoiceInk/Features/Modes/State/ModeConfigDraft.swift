@@ -9,6 +9,9 @@ struct ModeConfigDraft {
     var triggerGroups: [ModeTriggerGroup]
     var triggerWords: [String]
     var isAIEnhancementEnabled: Bool
+    var decisionModelID: String?
+    var enhancementStrategy: EnhancementStrategy
+    var decisionThreshold: Double
     var selectedPromptId: UUID?
     var selectedTranscriptionModelName: String?
     var isRealtimeTranscriptionEnabled: Bool
@@ -39,6 +42,9 @@ struct ModeConfigDraft {
             triggerGroups = []
             triggerWords = []
             isAIEnhancementEnabled = false
+            decisionModelID = inheritedConfig?.decisionModelID
+            enhancementStrategy = .always
+            decisionThreshold = DecisionSettings.defaultThreshold
             selectedPromptId = inheritedConfig?.selectedPrompt.flatMap { UUID(uuidString: $0) }
             selectedTranscriptionModelName = inheritedConfig?.selectedTranscriptionModelName
             isRealtimeTranscriptionEnabled = true
@@ -65,6 +71,9 @@ struct ModeConfigDraft {
             triggerGroups = latestConfig.triggerGroups ?? []
             triggerWords = latestConfig.triggerWords
             isAIEnhancementEnabled = latestConfig.isAIEnhancementEnabled
+            enhancementStrategy = latestConfig.enhancementStrategy
+            decisionModelID = latestConfig.decisionModelID
+            decisionThreshold = latestConfig.decisionThreshold
             selectedPromptId = latestConfig.selectedPrompt.flatMap { UUID(uuidString: $0) }
             selectedTranscriptionModelName = latestConfig.selectedTranscriptionModelName
             isRealtimeTranscriptionEnabled = latestConfig.isRealtimeTranscriptionEnabled
@@ -182,7 +191,9 @@ struct ModeConfigDraft {
                 selectedAIModel: selectedAIModel,
                 outputMode: outputMode,
                 customCommand: savedCustomCommand,
-                isDefault: savedIsDefault
+                isDefault: savedIsDefault,
+                enhancementStrategy: enhancementStrategy, decisionModelID: decisionModelID,
+                decisionThreshold: decisionThreshold
             )
 
         case .edit(let config):
@@ -194,6 +205,9 @@ struct ModeConfigDraft {
             updatedConfig.triggerGroups = triggerGroups.isEmpty ? nil : triggerGroups
             updatedConfig.triggerWords = ModeConfig.normalizedTriggerWords(triggerWords)
             updatedConfig.isAIEnhancementEnabled = isAIEnhancementEnabled
+            updatedConfig.enhancementStrategy = enhancementStrategy
+            updatedConfig.decisionModelID = decisionModelID
+            updatedConfig.decisionThreshold = DecisionSettings.validatedThreshold(decisionThreshold)
             updatedConfig.selectedPrompt = selectedPromptId?.uuidString
             updatedConfig.selectedTranscriptionModelName = selectedTranscriptionModelName
             updatedConfig.isRealtimeTranscriptionEnabled = isRealtimeTranscriptionEnabled
